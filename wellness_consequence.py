@@ -1,3 +1,5 @@
+# This query calculates the amount of people who have seen or experienced negative consequences for a mental health-related concern in companies that offer mental health wellness programs.
+
 import pymongo
 from pymongo import MongoClient
 
