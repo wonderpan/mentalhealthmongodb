@@ -1,3 +1,6 @@
+# This query calculates the percentage of people per country willing to disclose mental health concerns in an interview, filtering out countries with fewer than 20 respondents.
+# Filtering is done to make sure that countries with few respondents does not get misrepresented in the analysis. 
+
 import pymongo
 from pymongo import MongoClient
 
