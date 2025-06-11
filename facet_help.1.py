@@ -1,0 +1,125 @@
+import pymongo
+from pymongo import MongoClient
+
+client = MongoClient('172.31.85.91', 27017)
+db = client["csci112proj"]
+mental = db["mental_surv"]
+
+pipeline = [
+    {
+        "$facet": {
+            "openness_if_benefits": [
+                { "$match": { "benefits": "Yes" } },
+                { "$group": {
+                    "_id": None,
+                    "total_benefit_count": { "$sum": 1 },
+                    "benefit_coworkers": {
+                        "$sum": { "$cond": [{ "$eq": ["$coworkers", "Yes"] }, 1, 0] }
+                    },
+                    "benefit_supervisor": {
+                        "$sum": { "$cond": [{ "$eq": ["$supervisor", "Yes"] }, 1, 0] }
+                    }
+                }},
+                { "$project": {
+                    "_id" : 0,
+                    "total_benefit_count": 1,
+                    "pct_open_coworkers": {
+                        "$round": [
+                            { "$multiply": [
+                                { "$divide": ["$benefit_coworkers", "$total_benefit_count"] },
+                                100
+                            ]},
+                            2
+                        ]
+                    },
+                    "pct_open_supervisor": {
+                        "$round": [
+                            { "$multiply": [
+                                { "$divide": ["$benefit_supervisor", "$total_benefit_count"] },
+                                100
+                            ]},
+                            2
+                        ]
+                    }
+                }}
+            ],
+            "openness_if_wellness": [
+                { "$match": { "wellness_program": "Yes" } },
+                { "$group": {
+                    "_id": None,
+                    "total_wellness_count": { "$sum": 1 },
+                    "wellness_coworkers": {
+                        "$sum": { "$cond": [{ "$eq": ["$coworkers", "Yes"] }, 1, 0] }
+                    },
+                    "wellness_supervisor": {
+                        "$sum": { "$cond": [{ "$eq": ["$supervisor", "Yes"] }, 1, 0] }
+                    }
+                }},
+                { "$project": {
+                    "_id" : 0,
+                    "total_wellness_count": 1,
+                    "pct_open_coworkers": {
+                        "$round": [
+                            { "$multiply": [
+                                { "$divide": ["$wellness_coworkers", "$total_wellness_count"] },
+                                100
+                            ]},
+                            2
+                        ]
+                    },
+                    "pct_open_supervisor": {
+                        "$round": [
+                            { "$multiply": [
+                                { "$divide": ["$wellness_supervisor", "$total_wellness_count"] },
+                                100
+                            ]},
+                            2
+                        ]
+                    }
+                }}
+            ],
+            "openness_if_seek_help": [
+                { "$match": { "seek_help": "Yes" } },
+                { "$group": {
+                    "_id": None,
+                    "total_help_count": { "$sum": 1 },
+                    "help_coworkers": {
+                        "$sum": { "$cond": [{ "$eq": ["$coworkers", "Yes"] }, 1, 0] }
+                    },
+                    "help_supervisor": {
+                        "$sum": { "$cond": [{ "$eq": ["$supervisor", "Yes"] }, 1, 0] }
+                    }
+                }},
+                { "$project": {
+                    "_id" : 0,
+                    "total_help_count": 1,
+                    "pct_open_coworkers": {
+                        "$round": [
+                            { "$multiply": [
+                                { "$divide": ["$help_coworkers", "$total_help_count"] },
+                                100
+                            ]},
+                            2
+                        ]
+                    },
+                    "pct_open_supervisor": {
+                        "$round": [
+                            { "$multiply": [
+                                { "$divide": ["$help_supervisor", "$total_help_count"] },
+                                100
+                            ]},
+                            2
+                        ]
+                    }
+                }}
+            ]
+        }
+    }
+]
+
+result = list(mental.aggregate(pipeline))
+
+for facet_name, docs in result[0].items():
+    print(f"\n--- {facet_name} ---")
+    for doc in docs:
+        print(doc)
