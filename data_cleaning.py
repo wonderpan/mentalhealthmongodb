@@ -1,3 +1,9 @@
+# With the help of ChatGPT, this script was meant to clean the gender data, classifying all answers into the following:
+# 1. Male
+# 2. Female
+# 3. Non-binary
+# 4. Other
+
 import pymongo
 from pymongo import MongoClient
 import re
