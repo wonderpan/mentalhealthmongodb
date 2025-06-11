@@ -1,3 +1,9 @@
+# This query seeks to analyze the percentage of people in the survey who are not willing to open up to supervisors and co-workers given the existence of the following: 
+# 1. Mental health benefits
+# 2. Wellness benefits
+# 3. Access to resources for seeking help
+
+
 import pymongo
 from pymongo import MongoClient
 
